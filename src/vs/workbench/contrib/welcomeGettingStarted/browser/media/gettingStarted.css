@@ -39,6 +39,11 @@
 	height: 100%;
 }
 
+.monaco-workbench .part.editor > .content .gettingStartedContainer .product-logo {
+	display: block;
+	margin-bottom: 12px;
+}
+
 .monaco-workbench .part.editor > .content .gettingStartedContainer h1 {
 	padding: 5px 0 0;
 	margin: 0;

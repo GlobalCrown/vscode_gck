@@ -48,3 +48,6 @@ dist
 .agents/skills/.local/
 .claude/skills/.local/
 .github/skills/.local/
+
+# Local portable Node.js runtime
+tools/

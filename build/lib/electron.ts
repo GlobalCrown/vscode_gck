@@ -106,7 +106,7 @@ const { electronVersion, msBuildId } = util.getElectronVersion();
 export const config = {
 	version: electronVersion,
 	tag: product.electronRepository ? `v${electronVersion}-${msBuildId}` : undefined,
-	productAppName: product.nameLong,
+	productAppName: product.nameShort,
 	companyName: 'Microsoft Corporation',
 	copyright: 'Copyright (C) 2026 Microsoft. All rights reserved',
 	darwinExecutable: product.nameShort,
@@ -230,7 +230,18 @@ function getElectron(arch: string): () => NodeJS.ReadWriteStream {
 
 async function main(arch: string = process.arch): Promise<void> {
 	const electronPath = path.join(root, '.build', 'electron');
-	await util.rimraf(electronPath)();
+	try {
+		await util.rimraf(electronPath)();
+	} catch (err: any) {
+		// On Windows, file watchers can lock .asar files; retry after short delay
+		if (err?.code === 'EBUSY') {
+			console.warn('EBUSY during cleanup, retrying in 2s...');
+			await new Promise(r => setTimeout(r, 2000));
+			try { await util.rimraf(electronPath)(); } catch { /* proceed anyway */ }
+		} else {
+			throw err;
+		}
+	}
 	await util.streamToPromise(getElectron(arch)());
 }
 

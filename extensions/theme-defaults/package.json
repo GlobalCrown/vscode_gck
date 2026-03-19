@@ -14,6 +14,12 @@
   "contributes": {
     "themes": [
       {
+        "id": "GCKontrol Light",
+        "label": "%gckontrolLightThemeLabel%",
+        "uiTheme": "vs",
+        "path": "./themes/gckontrol_light.json"
+      },
+      {
         "id": "VS Code Light",
         "label": "%vsCodeLightThemeLabel%",
         "uiTheme": "vs",

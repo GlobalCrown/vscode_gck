@@ -33,7 +33,29 @@ async function ensureNodeModules() {
 }
 
 async function getElectron() {
+	const product = JSON.parse(await fs.readFile(path.join(rootDir, 'product.json'), 'utf8'));
+	const exeName = product.nameShort + '.exe';
+	const exePath = path.join(rootDir, '.build', 'electron', exeName);
+
+	if (await exists('.build/electron/' + exeName)) {
+		console.log(`Electron binary found (${exeName}), skipping download.`);
+		return;
+	}
+
+	console.log('Downloading Electron...');
 	await runProcess(npm, ['run', 'electron']);
+
+	// Embed GCKontrol icon into the fresh exe
+	const icoPath = path.join(rootDir, 'resources', 'win32', 'code.ico');
+	if (process.platform === 'win32' && (await exists('resources/win32/code.ico'))) {
+		try {
+			const rcedit = (await import('rcedit')).default;
+			await rcedit(exePath, { icon: icoPath });
+			console.log('Icon embedded into ' + exeName);
+		} catch (e) {
+			console.warn('Warning: failed to embed icon:', e);
+		}
+	}
 }
 
 async function ensureCompiled() {
